@@ -10,14 +10,16 @@
 #include "../../AST.h"
 #include "../modifiers/AccessModifiersExpression.h"
 #include "SignatureExpression.h"
+#include "BodyExpression.h"
 
 struct CallableExpression : public AST {
     AccessModifiersExpression *modifiers;
     SignatureExpression *signature;
-    AST *body;
+    BodyExpression *body;
 
 public:
-    explicit CallableExpression(AccessModifiersExpression *modifier, SignatureExpression *signature, AST *body)
+    explicit CallableExpression(AccessModifiersExpression *modifier, SignatureExpression *signature,
+                                BodyExpression *body)
             : modifiers(modifier), signature(signature), body(body) {}
 
     CallableExpression() {}

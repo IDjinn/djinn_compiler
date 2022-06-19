@@ -1,0 +1,12 @@
+//
+// Created by Lucas on 18/06/2022.
+//
+
+#ifndef DJINN_COMPILER_CONSTANTS_H
+#define DJINN_COMPILER_CONSTANTS_H
+
+
+#define MAX_BODY_RECURSION_DEPTH 10
+
+
+#endif //DJINN_COMPILER_CONSTANTS_H

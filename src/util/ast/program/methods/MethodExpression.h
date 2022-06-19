@@ -10,14 +10,15 @@
 #include <utility>
 #include <vector>
 #include "../../AST.h"
+#include "CallableExpression.h"
 
 class MethodExpression : public AST {
 private:
-    AST *callable;
+    CallableExpression *callable;
     AST *parent;
 
 public:
-    explicit MethodExpression(AST *callable, AST *parent) : callable(callable), parent(parent) {}
+    explicit MethodExpression(CallableExpression *callable, AST *parent) : callable(callable), parent(parent) {}
 };
 
 

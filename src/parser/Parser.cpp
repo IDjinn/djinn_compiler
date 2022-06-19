@@ -3,9 +3,7 @@
 //
 
 #include "Parser.h"
-#include "../util/ast/program/methods/MethodExpression.h"
-#include "../util/ast/program/methods/CallableExpression.h"
-#include "../util/ast/program/modifiers/AccessModifiersExpression.h"
+#include "../util/ast/program/methods/ReturnExpression.h"
 
 Parser::Parser(TokenWalker *walker) {
     this->walker = walker;
@@ -47,13 +45,13 @@ AST *Parser::parse_method(Token *token) {
     auto callable = new CallableExpression();
     callable->modifiers = new AccessModifiersExpression();
 
-    Token *fx = nullptr;
-    Token *return_type = nullptr;
+    Token *fx = nullptr, *return_type = nullptr, *identifier = nullptr;
     do {
         token = this->walker->peek(); // TODO: continue consuming from token position, do not peek from walker
         auto parsed_type = parse_token_type_from_value(token->get_value());
-        switch (parsed_type) {
-            case TokenType::PUBLIC:
+        auto type = parsed_type == TokenType::UNKNOWN ? token->get_type() : parsed_type;
+        switch (type) {
+            case TokenType::PUBLIC: // TODO: move-me to my own method
             case TokenType::PRIVATE:
             case TokenType::PROTECTED:
             case TokenType::STATIC:
@@ -66,14 +64,14 @@ AST *Parser::parse_method(Token *token) {
                 continue;
             }
 
-            case TokenType::FUNCTION: {
+            case TokenType::FUNCTION: {// TODO: move-me to my own method
                 fx = token;
                 this->walker->advance();
                 continue; // uselless token
             }
 
                 // built-in types
-            case TokenType::VOID:
+            case TokenType::VOID:// TODO: move-me to my own method
             case TokenType::INT16:
             case TokenType::INT32:
             case TokenType::INT64:
@@ -94,15 +92,41 @@ AST *Parser::parse_method(Token *token) {
                 continue;
             }
 
-            case TokenType::OPEN_BRACE: {
+
+            case TokenType::OPEN_BRACE: { // TODO: move-me to my own method
                 assert(fx != nullptr); //first function flag
                 assert(return_type != nullptr);  // then return type
-                auto body = this->parse_body();
+                assert(identifier != nullptr); // then identifier
+
+                // TODO: function params
+                this->walker->advance();
+                this->parse_body(nullptr, 0);
+                continue;
+            }
+            case TokenType::CLOSE_BRACE: {
+                this->walker->advance();
+                continue;
+            }
+
+            case TokenType::OPEN_BRACKET: { // TODO: move-me to my own method
+                assert(fx != nullptr); //first function flag
+                assert(return_type != nullptr);  // then return type
+                assert(identifier != nullptr); // then identifier
+
+                this->parse_body(nullptr, 0);
+                // TODO: function params
+                this->walker->advance();
+                assert(this->walker->peek()->get_type() == TokenType::CLOSE_BRACKET);
+                this->walker->advance();
+                continue;
             }
 
 
             case TokenType::IDENTIFIER: {
-                break;
+                identifier = token;
+                callable->signature->name = token;
+                this->walker->advance();
+                continue;
             }
 
             default:
@@ -115,5 +139,44 @@ AST *Parser::parse_method(Token *token) {
 }
 
 AST *Parser::parse_import(Token *token) {
+    return nullptr;
+}
+
+AST *Parser::parse_body(Token *token, uint32_t deep) {
+    auto body = new BodyExpression();
+
+    do {
+        token = this->walker->peek();
+        auto parsed_type = parse_token_type_from_value(token->get_value());
+        auto type = parsed_type == TokenType::UNKNOWN ? token->get_type() : parsed_type;
+        switch (type) {
+            case STATIC: // TODO: static, const local variables
+            case CONST:
+                break;
+
+            case TokenType::RETURN: {
+                auto return_expression = new ReturnExpression();
+                body->statements.push_back(return_expression);
+                this->walker->advance();
+                continue;
+            }
+
+            case TokenType::IDENTIFIER: { // TODO: this is a variable or type.
+
+            }
+
+            case TokenType::OPEN_BRACE: {
+                this->walker->advance();
+                body->statements.push_back(this->parse_body(nullptr, deep + 1));
+                continue;
+            }
+
+            case TokenType::CLOSE_BRACE: {
+                this->walker->advance();
+                return body; // return recursive body
+            }
+        }
+    } while (deep++ < MAX_BODY_RECURSION_DEPTH);
+
     return nullptr;
 }
