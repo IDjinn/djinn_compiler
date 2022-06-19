@@ -103,7 +103,23 @@ enum TokenType {
     SHIFT_LEFT_EQUAL, // <<=
 
 
-
+    // built-in types
+    VOID,
+    BOOL,
+    BYTE,
+    CHAR,
+    INT16,
+    INT32,
+    INT64,
+    INT128,
+    UINT16,
+    UINT32,
+    UINT64,
+    UINT128,
+    FLOAT32,
+    FLOAT64,
+    FLOAT128,
+    STRING,
 
 
     INVALID,

@@ -31,7 +31,7 @@ public:
         this->location = location;
     }
 
-    std::string get_value() {
+    std::string &get_value() {
         return this->value;
     }
 

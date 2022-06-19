@@ -11,15 +11,19 @@
 #include "../util/typos/TokenTypeUtils.h"
 #include "../util/ast/AST.h"
 #include <memory>
+#include "../util/ast/program/Program.h"
 
 class Parser {
     TokenWalker *walker;
+    Program *program;
 
     std::map<TokenType, std::function<AST *(Token *)>> *parse_table;
 
-    AST *parse_identifier(Token *token);
+    AST *parse_identifier(Token *token = nullptr);
 
-    AST *parse_method(Token *token);
+    AST *parse_import(Token *token = nullptr);
+
+    AST *parse_method(Token *token = nullptr);
 
 public:
     explicit Parser(TokenWalker *walker);

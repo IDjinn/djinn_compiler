@@ -7,7 +7,7 @@
 
 
 #include <string>
-#include "../AST.h"
+#include "../../AST.h"
 
 class VariableExpression : public AST {
     std::string name;
