@@ -3,7 +3,6 @@
 //
 
 #include "Parser.h"
-#include "../util/ast/program/methods/ReturnExpression.h"
 
 Parser::Parser(TokenWalker *walker) {
     this->walker = walker;
@@ -18,7 +17,7 @@ void Parser::parse() {
     do {
         auto token = this->walker->peek();
         if (token == nullptr) {
-            break;
+            break; // never should happen
         }
 
         auto parsed_type = parse_token_type_from_value(token->get_value());
@@ -103,6 +102,7 @@ AST *Parser::parse_method(Token *token) {
                 this->parse_body(nullptr, 0);
                 continue;
             }
+
             case TokenType::CLOSE_BRACE: {
                 this->walker->advance();
                 continue;
@@ -132,7 +132,7 @@ AST *Parser::parse_method(Token *token) {
             default:
                 return callable;
         }
-    } while (true);
+    } while (true); // TODO: infinite loop protection
 
 
     return nullptr;
@@ -144,6 +144,9 @@ AST *Parser::parse_import(Token *token) {
 
 AST *Parser::parse_body(Token *token, uint32_t deep) {
     auto body = new BodyExpression();
+    if (deep++ > MAX_BODY_RECURSION_DEPTH) {
+        return body;
+    }
 
     do {
         token = this->walker->peek();
@@ -152,6 +155,7 @@ AST *Parser::parse_body(Token *token, uint32_t deep) {
         switch (type) {
             case STATIC: // TODO: static, const local variables
             case CONST:
+            default:
                 break;
 
             case TokenType::RETURN: {
@@ -173,10 +177,12 @@ AST *Parser::parse_body(Token *token, uint32_t deep) {
 
             case TokenType::CLOSE_BRACE: {
                 this->walker->advance();
-                return body; // return recursive body
+                return body; // return recursive body. This is the one way to leave this method. check to do below
             }
         }
-    } while (deep++ < MAX_BODY_RECURSION_DEPTH);
+
+        // TODO: infinite loop protection
+    } while (true);
 
     return nullptr;
 }

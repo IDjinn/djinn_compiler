@@ -16,6 +16,7 @@
 #include "../util/ast/program/methods/MethodExpression.h"
 #include "../util/ast/program/methods/CallableExpression.h"
 #include "../util/ast/program/modifiers/AccessModifiersExpression.h"
+#include "../util/ast/program/methods/ReturnExpression.h"
 #include "../util/Constants.h"
 
 class Parser {
