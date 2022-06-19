@@ -6,7 +6,7 @@
 #define DJINN_COMPILER_ACCESSMODIFIERSEXPRESSION_H
 
 
-#include <vector>
+#include <set>
 #include "../../AST.h"
 #include "ModifierExpression.h"
 
@@ -17,7 +17,7 @@ public:
     explicit AccessModifiersExpression(std::vector<ModifierExpression *> modifiers) : modifiers(std::move(modifiers)) {}
 
     AccessModifiersExpression() {
-        modifiers = std::vector<ModifierExpression *>();
+        modifiers = *new std::vector<ModifierExpression *>();
     }
 
     void add_modifier(ModifierExpression *modifier) {

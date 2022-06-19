@@ -4,10 +4,6 @@
 #include "src/util/ast/AST.h"
 #include "src/parser/Parser.h"
 
-class User {
-    int id;
-};
-
 int main() {
     std::ifstream file_reader("helloWorld.djinn");
     std::stringstream buffer;

@@ -6,7 +6,7 @@
 #define DJINN_COMPILER_SIGNATUREEXPRESSION_H
 
 
-#include <vector>
+#include <set>
 #include "../../AST.h"
 
 struct SignatureExpression {

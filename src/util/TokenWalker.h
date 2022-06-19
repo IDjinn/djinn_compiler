@@ -6,7 +6,7 @@
 #define DJINN_COMPILER_TOKENWALKER_H
 
 
-#include <vector>
+#include <set>
 #include "typos/Token.h"
 #include "../lexer/Lexer.h"
 

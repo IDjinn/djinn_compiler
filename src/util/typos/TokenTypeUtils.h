@@ -59,9 +59,9 @@ static const std::map<TokenType, std::string> TOKEN_TYPE_TO_KEYWORD = {
 
 
 inline TokenType parse_token_type_from_value(std::string &value, bool ignore_case = true) {
-    if (ignore_case) {
+    /*if (ignore_case) {
         std::transform(value.begin(), value.end(), value.begin(), ::tolower);
-    }
+    }*/
 
     auto it = KEYWORD_TO_TOKEN_TYPE.find(value);
     if (it != KEYWORD_TO_TOKEN_TYPE.end()) {

@@ -7,6 +7,8 @@
 
 
 #include "../../AST.h"
+#include <set>
+#include <vector>
 
 struct BodyExpression : public AST {
     std::vector<AST *> statements;
@@ -19,7 +21,7 @@ public:
         visitor->visit(this);
     }*/
     BodyExpression() {
-
+        statements = *new std::vector<AST *>();
     }
 };
 

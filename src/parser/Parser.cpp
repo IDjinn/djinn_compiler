@@ -46,7 +46,11 @@ AST *Parser::parse_method(Token *token) {
 
     Token *fx = nullptr, *return_type = nullptr, *identifier = nullptr;
     do {
-        token = this->walker->peek(); // TODO: continue consuming from token position, do not peek from walker
+        token = this->walker->peek(); // TODO: continue consuming from token position, do not peek from
+        if (token == nullptr) {
+            return callable;
+        }
+
         auto parsed_type = parse_token_type_from_value(token->get_value());
         auto type = parsed_type == TokenType::UNKNOWN ? token->get_type() : parsed_type;
         switch (type) {
@@ -113,11 +117,11 @@ AST *Parser::parse_method(Token *token) {
                 assert(return_type != nullptr);  // then return type
                 assert(identifier != nullptr); // then identifier
 
-                this->parse_body(nullptr, 0);
-                // TODO: function params
                 this->walker->advance();
                 assert(this->walker->peek()->get_type() == TokenType::CLOSE_BRACKET);
                 this->walker->advance();
+                this->parse_body(nullptr, 0);
+                // TODO: function params
                 continue;
             }
 
@@ -150,6 +154,10 @@ AST *Parser::parse_body(Token *token, uint32_t deep) {
 
     do {
         token = this->walker->peek();
+        if (token == nullptr) {
+            return body;
+        }
+
         auto parsed_type = parse_token_type_from_value(token->get_value());
         auto type = parsed_type == TokenType::UNKNOWN ? token->get_type() : parsed_type;
         switch (type) {
@@ -181,6 +189,7 @@ AST *Parser::parse_body(Token *token, uint32_t deep) {
             }
         }
 
+        this->walker->advance();
         // TODO: infinite loop protection
     } while (true);
 
