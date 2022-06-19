@@ -57,12 +57,37 @@ This is some short code examples what will have in near future.
 
 ```c++
     void someMethod() try { // method scoped try catch
-        this.throwException();
-    } or {
-        print("This is a catch block");
-    };
+this.throwException();
+} or {
+print("This is a catch block");
+};
 
-    void throwException(){
-        throw 'This is a throwable';
-    }
+void throwException(){
+throw 'This is a throwable';
+}
+
+void cPlusPlusCode() cpp {
+// your c++ code here
+}
+```
+
+```c++
+    // variables lifetime
+void someMethod() {
+var a = 1;
+var b = 2;
+var c = a + b;
+
+// stack-based var is destroyed as expected
+}
+
+
+void someMethod() {
+object someObject = new object();
+object secondObject = new object();
+
+doSomething(secondObject); // secondObject now is part of doSomething's scope
+// free(secondObject);
+// free(someObject);
+}
 ```
