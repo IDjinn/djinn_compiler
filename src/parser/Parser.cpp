@@ -42,12 +42,12 @@ AST *Parser::parse_identifier(Token *token) {
 
 AST *Parser::parse_method(Token *token) {
     auto callable = new CallableExpression();
-    callable->modifiers = new AccessModifiersExpression();
+    callable->modifiers = new AccessModifiersExpression(); // TODO: do not create if it's invalid?
 
-    Token *fx = nullptr, *return_type = nullptr, *identifier = nullptr;
+    Token *fx = nullptr, *return_type = nullptr, *identifier = nullptr; // TODO: instances is unused, should use some bitflags to check declarations?
     do {
         token = this->walker->peek(); // TODO: continue consuming from token position, do not peek from
-        if (token == nullptr) {
+        if (token == nullptr) { // TODO: this should be there. Should never returns nullptr inside this function.
             return callable;
         }
 
@@ -58,7 +58,7 @@ AST *Parser::parse_method(Token *token) {
             case TokenType::PRIVATE:
             case TokenType::PROTECTED:
             case TokenType::STATIC:
-            case TokenType::ABSTRACT: {
+            case TokenType::ABSTRACT: { // TODO: check modifiers position and if can override
                 auto modifier = new ModifierExpression();
                 modifier->modifier = token;
                 modifier->type = Modifier::token_type_to_modifier_type(parsed_type);
@@ -81,7 +81,7 @@ AST *Parser::parse_method(Token *token) {
             case TokenType::INT128:
             case TokenType::FLOAT32:
             case TokenType::FLOAT64:
-            case TokenType::FLOAT128:
+            case TokenType::FLOAT128: // TODO: is this useful?
             case TokenType::STRING:
             case TokenType::CHAR:
             case TokenType::BOOL:
@@ -107,9 +107,9 @@ AST *Parser::parse_method(Token *token) {
                 continue;
             }
 
-            case TokenType::CLOSE_BRACE: {
+            case TokenType::CLOSE_BRACE: { // TODO: shouldn't be here?
                 this->walker->advance();
-                continue;
+                return callable;
             }
 
             case TokenType::OPEN_BRACKET: { // TODO: move-me to my own method
@@ -118,17 +118,16 @@ AST *Parser::parse_method(Token *token) {
                 assert(identifier != nullptr); // then identifier
 
                 this->walker->advance();
-                assert(this->walker->peek()->get_type() == TokenType::CLOSE_BRACKET);
+                assert(this->walker->peek()->get_type() == TokenType::CLOSE_BRACKET); // todo: FUNCTION PARAMS?
                 this->walker->advance();
-                this->parse_body(nullptr, 0);
                 // TODO: function params
-                continue;
+                break;
             }
 
 
             case TokenType::IDENTIFIER: {
                 identifier = token;
-                callable->signature->name = token;
+                callable->signature->name = token; // TODO: properly AST
                 this->walker->advance();
                 continue;
             }
@@ -138,6 +137,7 @@ AST *Parser::parse_method(Token *token) {
         }
     } while (true); // TODO: infinite loop protection
 
+    callable->body = this->parse_body();
 
     return nullptr;
 }
@@ -146,7 +146,7 @@ AST *Parser::parse_import(Token *token) {
     return nullptr;
 }
 
-AST *Parser::parse_body(Token *token, uint32_t deep) {
+BodyExpression *Parser::parse_body(Token *token, uint32_t deep) {
     auto body = new BodyExpression();
     if (deep++ > MAX_BODY_RECURSION_DEPTH) {
         return body;
@@ -167,7 +167,7 @@ AST *Parser::parse_body(Token *token, uint32_t deep) {
                 break;
 
             case TokenType::RETURN: {
-                auto return_expression = new ReturnExpression();
+                auto return_expression = new ReturnExpression(); // TODO: return values
                 body->statements.push_back(return_expression);
                 this->walker->advance();
                 continue;
@@ -179,19 +179,54 @@ AST *Parser::parse_body(Token *token, uint32_t deep) {
 
             case TokenType::OPEN_BRACE: {
                 this->walker->advance();
-                body->statements.push_back(this->parse_body(nullptr, deep + 1));
+                body->statements.push_back(this->parse_body(nullptr, deep + 1)); // TODO: check this recursion deepness
                 continue;
             }
 
             case TokenType::CLOSE_BRACE: {
                 this->walker->advance();
-                return body; // return recursive body. This is the one way to leave this method. check to do below
+                return body; // TODO: return recursive body. This is the one way to leave this method. check to do below
             }
         }
 
-        this->walker->advance();
+        this->walker->advance(); // TODO: is this invalid token?
         // TODO: infinite loop protection
     } while (true);
 
     return nullptr;
 }
+
+AST *Parser::parse_expression(Token *token) { // TODO: better way than while loop
+    AST *ret = nullptr;
+    do {
+        token = this->walker->peek();
+        if (token == nullptr) {
+            return ret;
+        }
+
+        auto parsed_type = parse_token_type_from_value(token->get_value());
+        auto type = parsed_type == TokenType::UNKNOWN ? token->get_type() : parsed_type;
+        switch (type) {
+            case STATIC: // TODO: static, const local variables
+            case CONST:
+            default:
+                break;
+
+            case TokenType::RETURN: {
+                auto return_expression = new ReturnExpression(); // TODO: return values
+                ret = return_expression;
+                this->walker->advance();
+                continue;
+            }
+
+            case TokenType::IDENTIFIER: { // TODO: this is a variable or type.
+
+            }
+        }
+
+        this->walker->advance();
+    } while (true);
+
+    return ret;
+}
+

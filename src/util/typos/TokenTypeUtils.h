@@ -32,6 +32,7 @@ static const std::map<std::string, TokenType> KEYWORD_TO_TOKEN_TYPE = {
         {"static",   TokenType::STATIC},
         {"abstract", TokenType::ABSTRACT},
         {"return",   TokenType::RETURN},
+
 };
 
 static const std::map<TokenType, std::string> TOKEN_TYPE_TO_KEYWORD = {
@@ -54,6 +55,7 @@ static const std::map<TokenType, std::string> TOKEN_TYPE_TO_KEYWORD = {
         {TokenType::UINT128,  "uint128"},
         {TokenType::BYTE,     "byte"},
         {TokenType::RETURN,   "return"},
+
 
 };
 
@@ -78,6 +80,11 @@ inline std::string parse_value_from_token_type(TokenType type) {
     }
 
     return "";
+}
+
+
+inline bool is_semicolon(TokenType type) {
+    return type == TokenType::SEMICOLON;
 }
 
 

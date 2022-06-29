@@ -31,7 +31,9 @@ class Parser {
 
     AST *parse_method(Token *token = nullptr);
 
-    AST *parse_body(Token *token = nullptr, uint32_t deep = 0);
+    BodyExpression *parse_body(Token *token = nullptr, uint32_t deep = 0);
+
+    AST *parse_expression(Token *token = nullptr);
 
 public:
     explicit Parser(TokenWalker *walker);

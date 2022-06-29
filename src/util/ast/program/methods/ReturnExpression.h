@@ -9,7 +9,7 @@
 #include "../../AST.h"
 
 struct ReturnExpression : public AST {
-
+    AST *left;
 };
 
 
