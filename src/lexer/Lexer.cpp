@@ -348,6 +348,7 @@ std::string Lexer::peek_string() {
     this->walker->advance(); // skip last "
 }
 
+// TODO
 std::string Lexer::peek_char() {
     return std::string();
 }

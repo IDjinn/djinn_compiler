@@ -3,6 +3,7 @@
 //
 
 #include "Parser.h"
+#include "../util/ast/program/imports/ImportExpression.h"
 
 Parser::Parser(TokenWalker *walker) {
     this->walker = walker;
@@ -11,11 +12,13 @@ Parser::Parser(TokenWalker *walker) {
     this->parse_table = new std::map<TokenType, std::function<AST *(Token *)>>();
     this->parse_table->insert({TokenType::IDENTIFIER, [&](Token *token) { return this->parse_identifier(token); }});
     this->parse_table->insert({TokenType::PUBLIC, [&](Token *token) { return this->parse_method(token); }});
+    this->parse_table->insert({TokenType::IMPORT, [&](Token *token) { return this->parse_import(token); }});
 }
 
-void Parser::parse() {
+Program *Parser::parse() {
     do {
         auto token = this->walker->peek();
+        assert(token != nullptr);
         if (token == nullptr) {
             break; // never should happen
         }
@@ -30,10 +33,12 @@ void Parser::parse() {
             } else {
                 this->program->add_method(ast);
             }
+            continue;
         }
 
         this->walker->advance();
     } while (!this->walker->is_end_of_file());
+    return this->program;
 }
 
 AST *Parser::parse_identifier(Token *token) {
@@ -87,9 +92,8 @@ AST *Parser::parse_method(Token *token) {
             case TokenType::BOOL:
             case TokenType::BYTE: {
                 assert(fx != nullptr); // built-in types must be preceded by a function (f)
-                auto signature = new SignatureExpression();
-                signature->return_type = token;
-                callable->signature = signature;
+                callable->signature = new SignatureExpression();
+                callable->signature->return_type = token;
                 return_type = token;
                 this->walker->advance();
                 continue;
@@ -103,7 +107,7 @@ AST *Parser::parse_method(Token *token) {
 
                 // TODO: function params
                 this->walker->advance();
-                this->parse_body(nullptr, 0);
+                callable->body = this->parse_body(this->walker->peek(), 0);
                 continue;
             }
 
@@ -126,6 +130,8 @@ AST *Parser::parse_method(Token *token) {
 
 
             case TokenType::IDENTIFIER: {
+                assert(fx != nullptr); //first function flag
+                assert(return_type != nullptr);  // then return type
                 identifier = token;
                 callable->signature->name = token; // TODO: properly AST
                 this->walker->advance();
@@ -143,7 +149,15 @@ AST *Parser::parse_method(Token *token) {
 }
 
 AST *Parser::parse_import(Token *token) {
-    return nullptr;
+    assert(token->get_type() == IDENTIFIER && token->get_value() == "import"); // TODO: get import keyword by function
+    this->walker->advance();
+
+    assert(this->walker->peek()->get_type() == IDENTIFIER);
+    auto import = new ImportExpression(this->walker->peek()->get_value());
+    this->walker->advance();
+    assert(this->walker->peek()->get_type() == SEMICOLON);
+    this->walker->advance();
+    return import;
 }
 
 BodyExpression *Parser::parse_body(Token *token, uint32_t deep) {
@@ -169,6 +183,11 @@ BodyExpression *Parser::parse_body(Token *token, uint32_t deep) {
             case TokenType::RETURN: {
                 auto return_expression = new ReturnExpression(); // TODO: return values
                 body->statements.push_back(return_expression);
+                if (this->walker->peek(1)->get_type() == NUMBER_LITERAL) {
+                    return_expression->right = this->walker->peek(1);
+                    this->walker->advance(2);
+                }
+                assert(this->walker->peek()->get_type() == TokenType::SEMICOLON);
                 this->walker->advance();
                 continue;
             }

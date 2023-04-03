@@ -10,6 +10,7 @@
 
 struct ReturnExpression : public AST {
     AST *left;
+    AST *right;
 };
 
 

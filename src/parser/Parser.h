@@ -38,7 +38,7 @@ class Parser {
 public:
     explicit Parser(TokenWalker *walker);
 
-    void parse();
+    Program *parse();
 };
 
 

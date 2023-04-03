@@ -11,6 +11,6 @@ int main() {
     std::string code = buffer.str();
     auto lexer = new Lexer(new TextWalker(code));
     Parser parser(new TokenWalker(lexer));
-    parser.parse();
+    auto program = parser.parse();
     return 0;
 }

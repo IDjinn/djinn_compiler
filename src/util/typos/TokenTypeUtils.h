@@ -11,7 +11,7 @@
 #include <map>
 
 static const std::map<std::string, TokenType> KEYWORD_TO_TOKEN_TYPE = {
-        {"imports",  TokenType::IMPORT},
+        {"import",   TokenType::IMPORT},
         {"public",   TokenType::PUBLIC},
         {"f",        TokenType::FUNCTION},
         {"void",     TokenType::VOID},
@@ -36,7 +36,7 @@ static const std::map<std::string, TokenType> KEYWORD_TO_TOKEN_TYPE = {
 };
 
 static const std::map<TokenType, std::string> TOKEN_TYPE_TO_KEYWORD = {
-        {TokenType::IMPORT,   "imports"},
+        {TokenType::IMPORT,   "import"},
         {TokenType::FUNCTION, "f"},
         {TokenType::PUBLIC,   "public"},
         {TokenType::VOID,     "void"},
