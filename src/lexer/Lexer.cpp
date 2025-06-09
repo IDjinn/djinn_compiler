@@ -285,7 +285,7 @@ Token *Lexer::next() {
         case '\'': {
             // ' ' some char literal, must occur after ' character
             if (this->walker->peek() != '\'' && this->walker->peek() == '\'') {
-                return Lexer::make_token(TokenType::CHAR_LITERAL, this->peek_char(), location);
+                return Lexer::make_token(TokenType::CHAR_LITERAL, std::string { this->peek_char(), 1 }, location);
             }
 
             return Lexer::make_token(TokenType::INVALID, location);
@@ -342,15 +342,15 @@ void Lexer::skip_whitespace() {
 
 std::string Lexer::peek_string() {
     this->walker->advance(); // skip first "
-    return (std::string) this->walker->peek_while([](char c, uint32_t offset) {
+    auto stringToken = this->walker->peek_while([](char c, uint32_t offset) {
         return is_valid_string(c, offset);
     });
     this->walker->advance(); // skip last "
+    return stringToken;
 }
 
-// TODO
-std::string Lexer::peek_char() {
-    return std::string();
+char Lexer::peek_char() const {
+    return this->walker->peek();
 }
 
 TextWalker *Lexer::get_walker() const {

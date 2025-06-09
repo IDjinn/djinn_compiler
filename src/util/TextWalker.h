@@ -35,7 +35,7 @@ public:
 
     bool is_end_of_file();
 
-    std::vector<char> peek_while(const std::function<bool(char, uint32_t)> &predicate, uint32_t offset = 0);
+    std::string peek_while(const std::function<bool(char, uint32_t)> &predicate, uint32_t offset = 0);
 
     Location get_location();
 };

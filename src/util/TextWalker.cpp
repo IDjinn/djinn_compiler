@@ -18,12 +18,13 @@ char TextWalker::peekAdvance(uint32_t offset, uint32_t count) {
     return peek;
 }
 
-std::vector<char> TextWalker::peek_while(const std::function<bool(char, uint32_t)> &predicate, uint32_t offset) {
+std::string TextWalker::peek_while(const std::function<bool(char, uint32_t)> &predicate, uint32_t offset) {
     std::vector<char> result;
     while (!this->is_end_of_file() && predicate(this->peek(), offset++)) {
         result.push_back(this->peekAdvance());
     }
-    return result;
+
+    return std::string { result.begin(), result.end() };
 }
 
 bool TextWalker::is_end_of_file() {

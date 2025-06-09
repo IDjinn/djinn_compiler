@@ -25,7 +25,7 @@ private:
 
     std::string peek_string();
 
-    std::string peek_char();
+    [[nodiscard]] char peek_char() const;
 
     static Token *make_token(TokenType type, Location location);
 

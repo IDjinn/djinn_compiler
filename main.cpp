@@ -5,7 +5,7 @@
 #include "src/parser/Parser.h"
 
 int main() {
-    std::ifstream file_reader("helloWorld.djinn");
+    std::ifstream file_reader("../code/helloWorld.djinn");
     std::stringstream buffer;
     buffer << file_reader.rdbuf();
     std::string code = buffer.str();
